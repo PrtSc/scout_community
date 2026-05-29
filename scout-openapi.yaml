@@ -1,0 +1,142 @@
+openapi: 3.1.0
+info:
+  title: Pure Signal Scout API (community spec)
+  version: "1.0.0"
+  description: |
+    Community-scoped OpenAPI spec for Team Cymru's Pure Signal Scout API.
+    Drop this into ChatGPT Custom GPT Actions, Microsoft Copilot Studio
+    custom connectors, or any OpenAPI-to-MCP bridge.
+
+    Authentication: send header "Authorization: Token YOUR_SCOUT_API_KEY".
+    Quota: community accounts get 300 searches per month. /usage and
+    /ip/foundation are the cheapest endpoints to call.
+servers:
+  - url: https://scout.cymru.com
+
+components:
+  securitySchemes:
+    ScoutTokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Send as: Token YOUR_SCOUT_API_KEY'
+
+security:
+  - ScoutTokenAuth: []
+
+paths:
+  /api/scout/usage:
+    get:
+      operationId: getUsage
+      summary: Return current API usage and remaining monthly quota.
+      responses:
+        "200":
+          description: Usage summary JSON.
+
+  /api/scout/search:
+    get:
+      operationId: searchScout
+      summary: Run a Scout query-language search.
+      description: |
+        Decrements quota on each call. Lead with specific selectors
+        (pdns.domain, ip, x509.sha256) before broad ones (asn, cc, port).
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Scout query, e.g. pdns.domain="*ngrok.io"
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: UTC date YYYY-MM-DD.
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: days
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+          description: Relative offset from now; overrides start_date/end_date.
+        - name: size
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+      responses:
+        "200":
+          description: Search results JSON.
+        "429":
+          description: Rate or quota limit exceeded.
+
+  /api/scout/ip/{ip}/details:
+    get:
+      operationId: getIpDetails
+      summary: Deep enrichment for a single IP. Decrements quota.
+      parameters:
+        - name: ip
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: days
+          in: query
+          schema:
+            type: integer
+        - name: size
+          in: query
+          schema:
+            type: integer
+        - name: sections
+          in: query
+          description: |
+            Comma-separated list. Allowed:
+            summary, proto_by_ip, comms, comms:client_server,
+            open_ports, pdns, x509, fingerprints, whois.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: IP details JSON.
+
+  /api/scout/ip/foundation:
+    get:
+      operationId: getFoundation
+      summary: Fast triage for up to 10 IPs. Lowest-cost lookup path.
+      parameters:
+        - name: ips
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Comma-separated list of up to 10 IPs.
+      responses:
+        "200":
+          description: Foundation JSON.
+
+  /scout/tags/export:
+    get:
+      operationId: exportTags
+      summary: Download the Scout tag taxonomy as CSV.
+      responses:
+        "200":
+          description: CSV body.
+          content:
+            text/csv: {}

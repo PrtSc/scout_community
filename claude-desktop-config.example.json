@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "scout": {
+      "command": "python",
+      "args": [
+        "/ABSOLUTE/PATH/TO/scout_community/mcp-server-python/server.py"
+      ],
+      "env": {
+        "SCOUT_API_KEY": "your_scout_api_key_here"
+      }
+    }
+  }
+}
