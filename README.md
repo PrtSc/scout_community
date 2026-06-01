@@ -1,6 +1,6 @@
 # scout_community
 
-Community-built integrations for **Team Cymru's Pure Signal Scout API** across frontier AI tools — Claude, ChatGPT, Microsoft Copilot, Google Gemini, Cursor/Windsurf/Cline/Zed, and Python agent frameworks (LangChain, LlamaIndex, AutoGen, CrewAI).
+Community-built integrations for **Team Cymru's Pure Signal Scout API** for the Scout Community Program across frontier AI tools — Claude, ChatGPT, Microsoft Copilot, Google Gemini, Cursor/Windsurf/Cline/Zed, and Python agent frameworks (LangChain, LlamaIndex, AutoGen, CrewAI).
 
 > This is an unofficial community resource. It is **not affiliated with, endorsed by, or supported by Team Cymru**. "Pure Signal" and "Scout" are trademarks of their respective owners.
 
